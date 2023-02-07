@@ -1,0 +1,667 @@
+X.java:
+----------
+
+package com.masai;
+
+public interface X {
+	
+	 void fun1();
+	 void fun2();
+
+}
+
+
+XImpl.java:
+--------------
+
+package com.masai;
+
+public class XImpl implements X {
+
+	@Override
+	public void fun1() {
+		
+		System.out.println("inside fun1 of XImpl");
+	}
+
+	@Override
+	public void fun2() {
+		System.out.println("inside fun2 of XImpl");
+	}
+	
+	//specific method 
+	public void fun3() {
+		System.out.println("inside fun3 of XImpl");
+	}
+
+}
+
+
+
+Demo.java:
+---------------
+
+package com.masai;
+
+public class Demo{
+	
+	public void funDemo(X x) {
+		if( x != null) {
+			System.out.println("inside funDemo of Demo");
+			
+			x.fun1();
+			x.fun2();
+		}
+		else
+			System.out.println("don't pass null value");
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		Demo d1= new Demo();
+		
+		XImpl obj = new XImpl();
+		
+		d1.funDemo(obj);
+
+	}
+	
+}
+
+
+
+
+example 2:
+-------------
+
+
+Demo.java:
+--------------
+
+package com.masai;
+
+public class Demo{
+	
+	public X funDemo() {
+		
+			System.out.println("inside funDemo of Demo");
+			
+			return new XImpl();
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		
+		Demo d1= new Demo();
+		
+//		X x1= d1.funDemo();
+//		
+//		x1.fun1();
+//		x1.fun2();
+//		
+		Object obj= d1.funDemo();
+		
+		//first level of downcasting in its implementation obj
+		XImpl xx= (XImpl)obj;
+		xx.fun1();
+		xx.fun2();
+		xx.fun3();
+		
+		
+		
+		
+		//first level of downcasting in the retured type interface
+		 X x1= (X)obj;
+		
+		x1.fun1();
+		x1.fun2();
+		
+		//second level of downcasting 
+		XImpl x3= (XImpl)x1;
+		
+		x3.fun3();
+		
+		XImpl x4 = new XImpl();
+		x4.fun1();
+		x4.fun2();
+		x4.fun3();
+		
+		
+		
+		
+		
+	}
+	
+}
+
+
+Hotel.java:
+--------------
+package com.masai;
+
+public interface Hotel {
+	
+	public void chickenBiryani();
+	
+	public void masalaDosa();
+
+}
+
+
+
+TajHotel.java:
+-----------------
+
+package com.masai;
+
+public class TajHotel implements Hotel {
+
+	@Override
+	public void chickenBiryani() {
+		System.out.println("Chicken Biryani from Taj Hotel");
+		
+	}
+
+	@Override
+	public void masalaDosa() {
+		System.out.println("Masala Dosa from Taj Hotel");
+
+	}
+	
+	//specific method
+	public void uthhappa() {
+		System.out.println("uthhappa from Taj Hotel");
+	}
+	
+
+}
+
+
+
+RoadSideHotel.java:
+---------------------------
+
+package com.masai;
+
+
+
+public class RoadSideHotel implements Hotel{
+
+	@Override
+	public void chickenBiryani() {
+		System.out.println("Chicken Biryani from RoadSide Hotel");
+		
+	}
+
+	@Override
+	public void masalaDosa() {
+		System.out.println("Masala Dosa from Road Side Hotel");
+	}
+
+}
+
+
+Demo.java:
+--------------
+package com.masai;
+
+public class Demo{
+	
+
+	
+	
+
+	public Hotel provideFood(int amount) {
+		
+		Hotel hotel = null;
+		
+		if(amount > 500)
+			hotel = new TajHotel();
+		else if(amount > 200 && amount <= 500)
+			hotel= new RoadSideHotel();
+		
+	
+		return hotel;
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+	
+		
+		Demo d1= new Demo();
+		
+		Hotel h= d1.provideFood(800);
+		
+		if( h != null) {
+			h.chickenBiryani();
+			h.masalaDosa();
+			
+			if(h instanceof TajHotel)
+			{
+				TajHotel taj= (TajHotel)h;
+				taj.uthhappa();
+			}
+		}
+		else
+			System.out.println("Amount should be greater than 200");
+		
+		
+	}
+	
+}
+
+
+
+
+--interface can not extends another class and can not implements any interface also.
+
+***One interface can extends more than one interface simulteniously.
+
+Intr1.java(I):
+
+funA();
+funB();
+
+Intr2.java(I):
+
+funC()
+funD();
+
+
+interface Intr3 extends  Intr1,Intr2{
+
+funX()
+funY();
+
+
+}
+
+class Demo implements Intr3{
+
+//it has to override all methods of Intr1, Intr2 and Intr3 interfaces.otherwise this Demo class has to be marked as abstract class.
+
+
+
+}
+
+
+Demo d1 = new Demo();
+
+d1.fun1();
+d1.fun2();
+d1.funA();
+d1.funB();
+d1.funX();
+d1.funY();
+
+
+Intr1 i1 = new Demo();
+i1.funA();
+i1.funB();
+
+Intr2 i2 = new Demo();
+i2.funC()
+i2.funD();
+
+Intr3 i3 = new Demo();
+i3.fun1();
+i3.fun2();
+i3.funA();
+i3.funB();
+i3.funX();
+i3.funY();
+
+
+
+--from java 1.8 onwards some new feature introduced in iinterface:
+
+1.default method  
+
+2.static method
+
+--both method should have body.
+
+
+
+1.default method:
+---------------------
+
+--we can define a default method with the body inside an interface.
+
+--this default method need not override inside the implementation classes.
+
+--these default method are bydefault inherited inside the implementation classes.
+
+--we can call these default method from any implementation class object.
+
+--if we want, we can override this default method inside the implementation classes.
+
+
+
+Hotel.java:
+--------------
+
+package com.masai;
+
+public interface Hotel{
+	
+	public void chickenBiryani();
+	
+	public void masalaDosa();
+	
+	public default void paneerMasala() {
+		System.out.println("paneer masala from Hotel");
+	}
+
+}
+
+
+
+TajHotel.java:
+-----------------
+
+package com.masai;
+
+public class TajHotel implements Hotel {
+
+	@Override
+	public void chickenBiryani() {
+		System.out.println("Chicken Biryani from Taj Hotel");
+		
+	}
+
+	@Override
+	public void masalaDosa() {
+		System.out.println("Masala Dosa from Taj Hotel");
+
+	}
+	
+	//specific method
+	public void uthhappa() {
+		System.out.println("uthhappa from Taj Hotel");
+	}
+	
+	@Override
+	public void paneerMasala() {
+		
+		System.out.println("Paneer Masala from Taj Hotel");
+	}
+	
+	
+
+}
+
+
+RoadSideHotel:
+-------------------
+
+from prev example
+
+Demo.java:
+----------------
+package com.masai;
+
+public class Demo{
+	
+
+	
+	
+
+	public Hotel provideFood(int amount) {
+		
+		Hotel hotel = null;
+		
+		if(amount > 500)
+			hotel = new TajHotel();
+		else if(amount > 200 && amount <= 500)
+			hotel= new RoadSideHotel();
+		
+	
+		return hotel;
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+	
+		
+		Demo d1= new Demo();
+		
+		Hotel h= d1.provideFood(400);
+		
+		if( h != null) {
+			h.chickenBiryani();
+			h.masalaDosa();
+			h.paneerMasala();
+			
+			if(h instanceof TajHotel)
+			{
+				TajHotel taj= (TajHotel)h;
+				taj.uthhappa();
+			}
+		}
+		else
+			System.out.println("Amount should be greater than 200");
+		
+		
+	}
+	
+}
+
+
+2. static method:
+--------------------
+
+--we can define a static method also inside an interface.
+
+--this static method must have body.
+
+--static method of an interface will not be inherited inside the implementation class.
+--so we can not call this static method of an interface by using implementation class object.
+
+Note: we can call the static method of an interface only by using interface name.
+
+Note: we can define same method as static or non-static inside the implementaion class also, which is already defined statically inside the interface (this is called as method hiding not method overriding)
+
+
+***Note:- A class may implement more than one interface simulteniously.
+
+X.java:
+---------
+
+package com.masai;
+
+public interface X {
+	
+	 void fun1();
+	 void fun2();
+
+}
+
+Y.java:
+--------
+package com.masai;
+
+public interface Y {
+	
+	void fun3();
+	void fun4();
+
+}
+
+
+XImpl.java:
+----------------
+
+package com.masai;
+
+public class XImpl implements X,Y {
+
+	@Override
+	public void fun1() {
+		
+		System.out.println("inside fun1 of XImpl");
+	}
+
+	@Override
+	public void fun2() {
+		System.out.println("inside fun2 of XImpl");
+	}
+
+	@Override
+	public void fun3() {
+		System.out.println("inside fun3 of XImpl");
+		
+	}
+
+	@Override
+	public void fun4() {
+		System.out.println("inside fun4 of XImpl");
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		X x1 = new XImpl();
+		
+		x1.fun1();
+		x1.fun2();
+		
+		Y y1 = new XImpl();
+		y1.fun3();
+		y1.fun4();
+		
+		
+		XImpl x3 = new XImpl();
+		x3.fun1();
+		x3.fun2();
+		x3.fun3();
+		x3.fun4();
+				
+	}
+	
+}
+
+
+Note: one class can extends another class and simultenioulsy implements multiple interfaces also.
+
+
+ex:
+
+public class XImpl extends A implements X,Y {
+
+
+}
+
+
+****Note: we can have an empty interface also.
+
+
+ex:-
+
+Z.java:
+----------
+package com.masai;
+
+public interface Z {
+
+}
+
+
+--this type of empty interface is also known as marker or tag interface.
+
+--some of the predefiend marker interface in java are:
+
+java.io.Serializable(I)
+java.lang.Cloanable(I)
+
+
+---these type of interfaces used to specify certain indentity behviour of our object.
+
+Student s1 = new Student(10,"Ram",800);
+
+Note:--if we want to combine multiple classes into a single family or 
+a single type then we use this type of marker interfaces.
+
+ex:
+
+Z.java:
+---------
+
+package com.masai;
+
+public interface Z {
+
+}
+
+A.java:
+-----------
+package com.masai;
+
+public class A implements Z{
+	
+	
+	void funA() {
+		System.out.println("inside funA of A");
+	}
+	
+	
+}
+
+
+B.java:
+----------
+package com.masai;
+
+public class B implements Z{
+
+	
+	public void funB() {
+		System.out.println("inside funB of Z");
+	}
+}
+
+
+Demo.java:
+--------------
+package com.masai;
+
+public interface Hotel  {
+	
+	public void chickenBiryani();
+	
+	public void masalaDosa();
+	
+	public default void paneerMasala() {
+		System.out.println("paneer masala from Hotel");
+	}
+	
+	public static void drinkingWater() {
+		
+		System.out.println("Drinking water from Hotel");
+	}
+	
+	public static void main(String[] args) {
+		
+		System.out.println("inside main");
+		
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+

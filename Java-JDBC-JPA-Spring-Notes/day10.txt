@@ -1,0 +1,172 @@
+polymorphism:
+-------------------
+
+--same method name but the functionality will be diff.
+
+we have 2 type of polymorphism:
+
+1.static polymorphism (compile time polymorphism )  (we achive using method overloading)
+2.dynamic polymorphism (run time polymorphism) (we achive using method overriding)
+
+Dynamic polymorphism example:
+------------------------------------------
+
+package com.masai;
+
+
+
+public class Demo {
+
+	
+	public void fun1(Object obj) {
+		
+		if(obj != null) {
+			
+			System.out.println("inside fun1(Object obj) of Demo");
+			
+			String s= obj.toString();
+			
+			System.out.println(s);
+		
+		}
+		else
+			System.out.println("Don't pass null value");
+	}
+		
+	public static void main(String[] args) {
+		
+		
+		Demo d1 = new Demo();
+		
+		d1.fun1(new A());
+
+		
+	}
+
+}
+
+
+println method belongs to java.io.PrintStream class
+--there are multiple overloaded println method is there :
+
+println(primitives)
+{
+//it simply print the value on the console
+}
+
+println(String s){
+//it simply print the content of the String object
+}
+
+println(Object d1){
+
+String str= d1.toString();
+println(str);
+
+}
+
+Note: if we print any class object, normally it should print the adddres of that object
+but instead of printing address, it print something else, then definetly that 
+class has overriden toString method in it.
+
+
+Abstract class:
+===========
+
+abstract Animal
+
+eat() // 1000
+sleep()
+walk()
+abstract makeNoise()
+
+
+
+Dog	Cat 	Tiger	Lion 
+
+
+Dog tommy = new Dog();
+Animal tommy =new Dog();
+
+Animal tommy =new Animal();  
+
+--to restrict the user that he can not create object of any class directly then we need to mark that class as an abstract class.
+
+
+--an abstract class is also known as partially implemented structure. i.e an abstract class can have concreate methods(methods with body) as well as an abstract method also.
+
+
+Note: an abstract class can be a empty class also.
+
+ex:
+
+A.java:
+---------
+
+package com.masai;
+
+public abstract class A {
+
+	void funA() {
+		System.out.println("inside funA of A");
+	}
+	
+	public abstract void funB();
+	
+	
+}
+
+
+--with an abstract class we can do whatever we can perform with a normal class except following 3 things:
+
+1. we can not create object of an abstract class directly.
+
+2.inside an abstract class,we can have an abstract method also.
+
+3.normal class can be final, where as abstract class can not be final.
+
+Note: final and abstract both can not be used at the same time.
+
+
+***Note:- an abstract class does not have any meaning until it is extended by the child class.
+i.e abstract class mean to be inherited.
+
+rule:
+--if any class try to extend any abstract class then that child class must override all the abstract methods of that abstract class, otherwise we need to make that child class also as an abstract class.
+
+--abstract method can not be static, private and final.
+
+
+--In java we have 3 type of valid structures are there:
+
+1. full implemented structure : (normal or concrete class)
+
+2.partial implemented structure :(abstract class)
+
+3.full unimplemented structure :(interface)
+
+
+we can define variables for all these 3 types of structures:
+
+
+A   a1 = ?  (concrete class)
+
+A a1 = new A();
+A a1 = new AChild();
+A a1 = null;
+
+
+
+Abs a2 = ?
+
+Abs a2 = new Abs();  //CE 
+Abs a2 = new AbsChild(); 
+Abs a1 = null;
+
+
+Intr a3 = ?
+
+Intr a3 = new Intr();// CE
+Intr a3 =  new IntrImpl();
+Intr a3 = null;
+

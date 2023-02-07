@@ -1,0 +1,304 @@
+  sending data to the server along with http request:
+=====================================
+
+--from the browser we send the request using either GET or POST 
+
+GET:
+--by typing in the URL 
+--clicking on hyperlink 
+--by clicking on button 
+
+POST: 
+
+--by submitting the form
+--if we try to upload any file
+
+****--Using GET also we can send the data, if we send the data using 
+GET method, that data will travel through url.
+where as if we send the data using POST method then that data 
+will travel using Http request body.
+
+In Webservices we can send following types of request also.
+PUT
+DELETE
+
+
+
+1. request parameter: (name-value pair)  (GET/DELETE/POST/DELETE)
+
+/index.jsp?roll=123&name=ram   // query string
+
+
+2.path parameter: it does not have the key  (GET/PUT/POST/DELETE)
+
+/index.jsp/123/ram
+
+3.by using request body:  (POST/PUT)
+
+jsondata 
+
+{
+"roll": 123,
+"name": "Ram",
+"marks": 500
+}
+
+
+xmldata
+
+
+<student>
+<roll>123</roll>
+<name>Ram</name>
+<marks>850</marks>
+</student>
+
+formdata:
+
+--by submitting the form page or uploading any file(POST/ PUT)
+
+
+
+Spring MVC:
+===========
+
+****In Spring Boot, rest api development will work based on Spring MVC architecture.
+
+
+if we develop a webapplication according to the mvc architecture manually, we need to develop Servlet class, jsp file and all the flow control logic manually.
+
+Spring f/w provides Spring-web-mvc module to simplify the manual mvc application development.
+in which , Spring mvc module provides a predefined Servlet class with predefined flow control logic , ie. DispatcherServlet class.
+
+Spring Boot:
+==========
+
+--it is a spring platform that mainly focus on convenstion over configuration.
+
+--It is not a f/w s/w, it is just a spring application development platform which 
+provides RAD(Rapid Application development) feature to the Spring f/w.
+
+--Spring boot support auto-configuration.
+
+--it provides integrated tomcat server, so we can develop webapplication/webservices without installing WebServer.
+
+--with the help of Spring boot, we can develop WA, WS, microservices , Spring cloud based application very easily.
+
+
+
+Spring : java based application framework
+
+Spring Core: base module of Spring f/w (IOC container , DI)
+
+Spring-MVC : It is a spring module to develop java based WA/WS (simplyfy the 
+process by providing DispatcherServlet class with predefined flow control).
+
+Spring Boot: It is a platform which simplyfy the Spring application development 
+--it provides integrated tomcat server.
+
+
+There are various ways to use spring boot to develop a Spring application:
+-----------------------------------------------------------------------------------------
+
+
+1. installing STS
+
+2.Installing STS plugin in another IDE 
+
+3.by using Spring initializer website
+
+4 by using maven or graddle application
+
+5 using command line
+
+
+using STS :--
+
+Developing a simple Spring application using Spring Boot in STS:
+==================================================
+
+
+@SpringBootApplication
+// @Configuration  + @ComponentScan + @EnableAutoConfiguration
+
+
+
+
+Webservices:
+===========
+
+--A Service that can be accesed over the web is known as webservice.
+
+--WA can also be accessed over the web but there r some diff :-
+
+1.WA are meant for end-user and to be accessed by browser in human readable form.
+whereas WS r meant for application to access the raw data in form of json,xml, plain text,etc.
+
+2.A WA can accesss the WS to get some data or to perform some task whereas WS can not access the WA to get some data.
+
+3.A Single WS can be used by diff kind of applications (developed in any technologies like Java, .Net, Python, PHP, ) whereas WA is not meant for reusablity.
+
+
+WS r categorised in 2 category:
+---------------------------------------
+1. SOAP based WS
+2.Restfull WS.
+
+
+1. SOAP based WS: (Simple Object Access Protocol)
+========================================
+
+--it is a xml based protocol, to communicate bt client application to the server application, since it is xml based , it is also platform and language independent.
+
+<student>
+<roll>100</roll>
+<name>Ram</name>
+<marks>850</marks>
+</student>
+
+WSDL file (it is also an xml file in which we describe all the services which we expose to the client)
+
+--creating a WS using SOAP are heavy weight application, becoz apart from creating the WS classes (actual service) there is a need to create some extra binding classes to parse the xml and convert them in java object.
+and vice-versa, and moreever to expose and consume the webservices we need to generate some xml file (WSDL file) which little complex file.
+
+
+--in order to make WS as light weight, another architectural style is defined named as REST (Representational State Transfer)
+
+
+--This REST architectural style tells that create a WS with the requeired operations/functionalities and expose them through the Http protocol . and allow them to be accessed by the client with the help of Http protocol without any extra binding classes and any xml files.
+
+
+--based on this architectural style sun-microsystem has released JAX-RS api for 
+creating and consuming the RESTfull webservices.
+
+--this JAX-RS api has diff implementaions are there (Jersey, RestEasy)
+
+
+
+
+Rules to make a java class as Restfull WS:
+================================
+JAX-RS  api -----> Jersey, RestEasy  
+
+
+--in restfull ws, A WS class is called as "rootresource" class and each method (service) of that class is called as "resource".
+
+1. each resource (method/service) of a ws class should contain an addressable uri, that can be accessed by http protocol.
+
+2. while exposing the Restfull WS we need to take the support the Http protocol methods:
+
+ex:
+
+GET: if we want to create a service that returns some info/data to the client then we define that service and expose that service with the help GET method of Http protocol.
+
+POST: getting/accepting  the data from the client and stroing or inserting the data. 
+
+PUT : getting/accepting some data from the client and update the existing data.
+
+DELETE : to delete some information from the server side.
+
+
+3. every restfull service class must be public and it must contains zero argument constructor.
+
+4.webservice method should consume or return the data in the form of following format.
+
+
+text/plain
+application/xml
+application/json   -- mosty used type
+
+
+--to make a java class as a Restfull WS, we need to use JAX-RS api and one of its implementation (jersey, RestEasy) , outside of Spring environment.
+
+--Spring f/w itself has provided its own api with the implementation to make a Spring bean (Controller class, the class which is annotated with @Controller annotation) as a restfull WS class.
+
+
+***Spring MVC- provides a DispatcherServlet (predefined servlet with all the flow control logic), but without Spring boot, if we try to create a Spring-mvc project then developer need to configure this DispatcherServlet inside thier application.
+
+--but with the Spring Boot, DispatcherServlet is already configured as a front controller of our application.
+furthur more Spring boot also provides integrated tomcat server to deploy our application.
+
+
+Steps to develop Spring Boot Restfull WS :
+===================================
+
+step1: create a new spring starter project:
+
+step2: add the spring-web dependencies from next screen.
+
+****Note: this web-dependency will integrate embedded tomcat server + predefined autoconfigured DispatcherServlet class.
+
+Note: tomcat server run on the default port 8080
+
+--8080 is a common port, it is recomended to change this port number before starting our application.
+
+go to the application.properties file:
+
+server.port=8888
+
+
+http://localhost:8888/hello    
+
+type of the request : http request
+request method: GET
+request : /hello
+
+
+example:
+
+MyController.java:
+-----------------------
+
+package com.masai;
+
+//@Controller
+@RestController
+public class MyController {
+
+	
+	
+	@RequestMapping("/hello")
+	//@ResponseBody
+	public String sayHello() {
+		return "welcome"; //here it will be represented as raw data
+	}
+	
+	
+}
+
+
+
+returning Student object to the client:
+------------------------------------------------
+
+
+//@Controller
+@RestController
+public class MyController {
+
+	
+	
+	@RequestMapping("/hello")
+	//@ResponseBody
+	public String sayHello() {
+		return "welcome"; //here it will be represented as raw data
+	}
+	
+	
+}
+
+
+
+http://localhost:8888/student
+
+output: json data 
+
+{"roll":10,"name":"Ram","marks":780}
+
+or
+
+{
+"roll": 10,
+"name": "Ram",
+"marks": 780
+}

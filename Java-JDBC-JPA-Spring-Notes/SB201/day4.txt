@@ -1,0 +1,462 @@
+
+POJO class
+Java Bean class
+Entity class
+
+
+POJO class: the class which can be compiled without adding any extra
+jar files in the classpath, that class should not implements or extends any 
+framework api related classes or interfaces.
+
+ex1:
+class X{  //it is a valid POJO
+
+public X(int i){
+
+}
+
+}
+
+ex2:
+
+class X implements Runnable{ //yes becoz is a part of Plain JDK, no need to add any jar file 
+
+}
+
+
+ex3
+
+class X implements Servlet{ // non-pojo
+
+}
+
+
+@Entity 
+class X{   // now it is a non-pojo class
+
+@Id
+private int roll
+
+
+}
+
+
+
+Java Bean class:
+-------------------
+
+pure encapsulated reusable component, 
+
+1.the class should be public.
+
+2.the class must of zero argument constructor
+
+3.if any fields are their then those should be private.
+
+4. expose the private fields through public getter setter methods.
+
+5.that class should implement Serializable interface  
+
+6. this class may have parameterized constrcutor, 
+
+7.this class may override equals() , hashCode(), toString()
+
+8.may have some other methods also.
+
+
+public class X implements Serializable{ // it is a Java Bean class, POJO class also.
+
+
+}
+
+
+
+
+
+Generators in JPA:-
+----------------------
+
+--Generators are used to generate the ID filed value automatically.
+
+
+---> txID
+
+
+
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int roll;
+
+
+--here roll will be generated automatically for each row.
+
+**Note:- if we use this @GeneratedValue annoation then we are not allowed to give the roll explicitly while inserting a record.
+
+--so we should create a object by using zero argument constrcutor and set the each value by calling setter method.
+
+
+
+AUTO :- internally underlaying ORM s/w creates a table called "hibernate_sequence" to maintain the Id value.
+
+IDENTITY :- it is used for auto_increatement feature to auto generate the id value
+
+SEQUENCE :- it is used for sequence feature to auto generate the id value
+
+
+
+
+
+
+DAO pattern example with JPA:-
+=========================
+
+EMUtil.java:-
+----------------
+
+public class EMUtil {
+	
+	
+	private static EntityManagerFactory emf;
+	
+	static{
+		emf=Persistence.createEntityManagerFactory("account-unit");
+	}
+	
+	public static EntityManager provideEntityManager(){
+		
+		//EntityManager em= emf.createEntityManager();
+		//return em;
+		
+		return emf.createEntityManager();
+	}
+}
+
+
+Account.java:- (Entity class)
+----------------
+
+
+@Entity
+public class Account  {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int accno;
+	private String name;
+	private int balance;
+	
+	
+	public Account() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public int getAccno() {
+		return accno;
+	}
+
+
+	public void setAccno(int accno) {
+		this.accno = accno;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public int getBalance() {
+		return balance;
+	}
+
+
+	public void setBalance(int balance) {
+		this.balance = balance;
+	}
+
+
+	public Account(int accno, String name, int balance) {
+		super();
+		this.accno = accno;
+		this.name = name;
+		this.balance = balance;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Account [accno=" + accno + ", name=" + name + ", balance="
+				+ balance + "]";
+	}
+
+}
+
+
+AccountDao.java:-(interface)
+--------------------
+
+public interface AccountDao {
+	
+	public boolean createAccount(Account account);
+	
+	public boolean deleteAccount(int accno);
+	
+	public boolean updateAccount(Account account);
+	
+	public Account findAccount(int accno);
+
+}
+
+
+AccountDaoImpl.java:-
+---------------------------
+
+
+public class AccountDaoImpl implements AccountDao{
+
+	@Override
+	public boolean createAccount(Account account) {
+		
+		boolean flag= false;
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		em.getTransaction().begin();
+		
+		em.persist(account);
+		flag=true;
+		
+		em.getTransaction().commit();
+		
+		
+		em.close();
+		
+		return flag;
+	}
+
+	@Override
+	public boolean deleteAccount(int accno) {
+		boolean flag=false;
+		
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		Account acc=em.find(Account.class, accno);
+		
+		if(acc != null){
+			
+			em.getTransaction().begin();
+			
+			em.remove(acc);
+			flag=true;
+			
+			em.getTransaction().commit();
+		}
+		
+		em.close();
+		
+		
+		
+		return flag;
+	}
+
+	@Override
+	public boolean updateAccount(Account account) {
+		
+		boolean flag=false;
+	
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		em.getTransaction().begin();
+		
+		em.merge(account);
+		flag=true;
+		
+		em.getTransaction().commit();
+		
+		
+		em.close();
+		
+		return flag;
+	
+	}
+
+	@Override
+	public Account findAccount(int accno) {
+		/*Account account=null;
+	
+	 EntityManager em=EMUtil.provideEntityManager();
+		
+	 
+	 	account = em.find(Account.class, accno);
+		
+		
+	
+	
+		return account;*/
+		
+		return EMUtil.provideEntityManager().find(Account.class, accno);
+		
+	}	
+}
+
+
+
+
+
+persistence.xml:-
+--------------------
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+
+    <persistence-unit name="account-unit" >
+
+
+<properties>
+         
+             <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.connection.password"  value="root"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/ratandb"/>
+         
+            <property name="hibernate.show_sql"  value="true"/>
+            <property name="hibernate.hbm2ddl.auto"  value="update"/>
+         
+          
+
+        </properties>
+    </persistence-unit>
+</persistence>
+
+
+DepositUseCase.java:-
+----------------------------
+
+
+public class DepositUseCase {
+	
+	
+	public static void main(String[] args) {
+		
+		AccountDao dao=new AccountDaoImpl();
+		
+		/*Account acc1=new Account();
+		acc1.setName("Ramesh");
+		acc1.setBalance(880);
+
+		
+		
+		boolean f= dao.createAccount(acc1);
+		
+		if(f)
+			System.out.println("Account created..");
+		else
+			System.out.println("Not created...");*/
+		
+		
+		Scanner sc=new Scanner(System.in);
+		
+		System.out.println("Enter Account number");
+		int ano=sc.nextInt();
+		
+		Account acc= dao.findAccount(ano);
+		
+		if(acc == null)
+			System.out.println("Account does not exist..");
+		else{
+			
+			
+			System.out.println("Enter the Amount to Deposit");
+			int amt=sc.nextInt();
+			
+			acc.setBalance(acc.getBalance()+amt);
+			
+			boolean f =dao.updateAccount(acc);
+			
+			if(f)
+				System.out.println("Deposited Sucessfully...");
+			else
+				System.out.println("Technical Error .....");
+					
+		}		
+	}
+
+}
+
+
+WithdrawUseCase.java:-
+-----------------------------
+
+public class WithdrawUseCase {
+	
+	public static void main(String[] args) {
+		
+		AccountDao dao=new AccountDaoImpl();
+		
+		Scanner sc=new Scanner(System.in);
+		
+		System.out.println("Enter Account number");
+		int ano=sc.nextInt();
+		
+		Account acc= dao.findAccount(ano);
+		
+		if(acc == null)
+			System.out.println("Account does not exist..");
+		else{
+		
+			System.out.println("Enter the withdrawing amount");
+			int amt=sc.nextInt();
+			
+			if(amt <= acc.getBalance()){
+				
+				acc.setBalance(acc.getBalance()-amt);
+				boolean f=dao.updateAccount(acc);
+				if(f)
+					System.out.println("please collect the cash...");
+				else
+					System.out.println("Technical Error...");
+				
+				
+			}else
+				System.out.println("Insufficient Amount..");	
+		}		
+	}
+
+}
+
+
+
+limitation of EM methods in performing CRUD operations:-
+----------------------------------------------------------------------
+
+persist();
+find()
+merge();
+remove();
+
+
+
+1.Retrieving Entity obj based on only ID field(PK field) @Id
+
+2.multiple Entity obj retrival is not possible (multiple record)
+
+3.bulk update and bulk delete is also not possible
+
+4.to access Entity obj we can not specify some extra condition.
+
+
+--to overcome the above limitation JPA has provided JPQL (java persistence query language).

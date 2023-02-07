@@ -1,0 +1,813 @@
+
+
+Mismatched b/w Object Oriented Representation and relational representation of data:-
+------------------------------------------------------------------------------------------------------
+
+1.granularity mismatch :- HAS-A relationship problem
+
+2.inheritence mismatch :- IS-A relationship problem
+
+3.Association Mismatch :- table relationship problem
+
+
+
+
+
+1.granularity mismatch :- HAS-A relationship problem:-
+============================================
+
+@Entity 
+class Employee{  --corse grain
+
+@Id
+int eid;
+String ename;
+int salary
+
+Address addr;
+
+}
+
+
+
+
+//this type of class is known as value class or normal class, it is not an Entity class
+class Address{  --fine grain
+
+String city;
+String country;
+String pincode;
+
+}
+
+
+an Entity can exist independently.
+
+
+--at table level we don't have Has-A relationship. (it is Has-A relationship mismatch)
+
+
+
+
+solution for the above HAS-A relation problem:-
+---------------------------------------------------------
+
+approach 1:-
+
+--we need to create a single table with all column (all for corse grain + all for fine grain classes)
+
+
+apply @Embeddable at the top of Address class or @Embedded at the top of Address addr varible indside the Employee Entity.
+
+ex:-
+
+
+
+Address.java:-
+-------------------
+
+
+public class Address {
+	
+	private String state;
+	private String city;
+	private String pincode;
+--
+--	
+}
+
+
+Employee.java:-
+-----------------
+
+
+@Entity
+public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int eid;
+	private String ename;
+	private int salary;
+	
+	@Embedded
+	private Address addr;  //here Address obj will be treated as value obj
+--
+--
+--
+
+}	
+	
+Demo.java:-
+----------------
+
+public class Demo {
+	
+	public static void main(String[] args) {
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		Employee emp=new Employee();
+		emp.setEname("Ram");
+		emp.setSalary(7800);
+		emp.setAddr(new Address("Maharastra", "pune", "75455"));
+		
+		
+		//Address adr=new Address("maharastra", "pune","75455");
+		//emp.setAddr(adr);
+		
+		em.getTransaction().begin();
+		
+		em.persist(emp);
+		
+		em.getTransaction().commit();
+		
+		System.out.println("done...");
+		
+	}
+
+}
+
+
+
+--if we try to take 2 address (one for home and another for office ) and then try to persist the employee obj we will get exception "repeated column"
+
+--we can solve this problem by overriding the column names of Embedded obj by using "@AttributeOverrides" annotation.
+
+ex 2:-
+=====
+
+Employee.java:-
+-------------------
+
+@Entity
+public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int eid;
+	private String ename;
+	private int salary;
+	
+	@Embedded
+	@AttributeOverrides({
+		
+		@AttributeOverride(name="state",column=@Column(name="HOME_STATE")),
+		@AttributeOverride(name="city",column=@Column(name="HOME_CITY")),
+		@AttributeOverride(name="pincode",column=@Column(name="HOME_PINCODE"))
+		
+	})
+	private Address homeAddr;  
+	
+	@Embedded
+	@AttributeOverrides({
+		
+		@AttributeOverride(name="state",column=@Column(name="OFFICE_STATE")),
+		@AttributeOverride(name="city",column=@Column(name="OFFICE_CITY")),
+		@AttributeOverride(name="pincode",column=@Column(name="OFFICE_PINCODE"))
+		
+	})
+	private Address officeAddr; 
+	
+--
+--
+--
+
+}
+
+Demo.java:-
+---------------
+
+
+public class Demo {
+	
+	public static void main(String[] args) {
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		Employee emp=new Employee();
+		emp.setEname("Ram");
+		emp.setSalary(7800);
+		emp.setHomeAddr(new Address("Maharastra", "pune", "75455"));
+		emp.setOfficeAddr(new Address("Telengana","hydrabad", "785422"));
+		
+		
+		em.getTransaction().begin();
+		
+		em.persist(emp);
+		
+		em.getTransaction().commit();
+		
+		System.out.println("done...");
+		
+	}
+
+}
+
+
+approach 2:- 
+-------------
+
+if any emp has more than two address then taking too many columns inside a table will violates the rules of normalization.
+
+--to solve this problem we need to use @ElementCollection annotaion, and let the user add the multiple addresses using List or Set.
+
+--in this case ORM s/w will generate a seperate table to maintain all the addresses details with a Foreign key that reffers the PK of Employee table.
+
+
+ex:-
+
+Employee.java:-
+------------------
+
+	@Entity
+	public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int eid;
+	private String ename;
+	private int salary;
+	
+	@ElementCollection
+	@Embedded
+	private Set<Address> addresses=new HashSet<Address>();
+
+	//
+	}
+
+
+Note: it is recomened to override equals() and hashCode() method
+if we want to put any user-defined objects inside the HashSet or 
+a key of a HashMap.
+
+
+Address.java:
+------------------
+
+package com.masai.model;
+
+import java.util.Objects;
+
+import javax.persistence.Embeddable;
+
+
+public class Address {
+	
+	
+	private String state;
+	private String city;
+	private String pincode;
+	private String type;
+	
+	
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(city, pincode, state, type);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Address other = (Address) obj;
+		return Objects.equals(city, other.city) && Objects.equals(pincode, other.pincode)
+				&& Objects.equals(state, other.state) && Objects.equals(type, other.type);
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getPincode() {
+		return pincode;
+	}
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public Address(String state, String city, String pincode, String type) {
+		super();
+		this.state = state;
+		this.city = city;
+		this.pincode = pincode;
+		this.type = type;
+	}
+	
+	
+	public Address() {
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+		return "Address [state=" + state + ", city=" + city + ", pincode=" + pincode + ", type=" + type + "]";
+	}
+	
+	
+	
+
+}
+
+
+
+
+
+Demo.java:-
+--------------
+
+public class Demo {
+	
+	public static void main(String[] args) {
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		Employee emp=new Employee();
+		emp.setEname("Ram");
+		emp.setSalary(7800);
+		
+		Employee emp= new Employee();
+		emp.setEname("Ramesh");
+		emp.setSalary(6800);
+		emp.getAddresses().add(new Address("Mh", "Pune", "787887","home"));
+		emp.getAddresses().add(new Address("MP", "Indore", "584542","office"));
+		
+		
+		em.getTransaction().begin();
+		
+		em.persist(emp);
+		
+		em.getTransaction().commit();
+		
+		System.out.println("done...");
+				
+	}
+
+}		
+		
+		
+--when we execute the above application 2 tables will be created :-
+
+1.employee :- which will contains only Employee details (it will not contains any details of any address)
+
+2.employee_addresses  :- this table will contains the details of all the addresses with a FK column employee_eid which reffers the eid column of employee table.
+
+
+
+
+Note:- if we want to change the 2nd table 'employee_addresses' and the FK column with our 
+our choice name then we need to use @JoinTable  and @JoinColumn
+
+ex:-
+
+
+Employee.java:-
+-------------------
+
+
+@Entity
+public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int eid;
+	private String ename;
+	private int salary;
+	
+	@ElementCollection
+	@Embedded
+	@JoinTable(name="empaddress",joinColumns=@JoinColumn(name="emp_id"))
+	private Set<Address> addresses=new HashSet<Address>();
+
+	--
+	--
+	}
+	
+with the above example the 2nd table will be created by the name "empaddess" and the 
+FK column will be by the name "emp_id".
+
+example:
+
+
+Demo.java:
+---------------
+
+package com.masai.model;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import com.masai.utility.EMUtil;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		//get all the Address of a Employee whose name is Ramesh
+		
+		String jpql="from Employee where ename='Ramesh'";
+		
+		Query q= em.createQuery(jpql);
+	
+		List<Employee> emps= q.getResultList();
+		
+		for(Employee emp:emps) {
+			
+			Set<Address> addrs= emp.getAddresses();
+			
+			for(Address adr:addrs) {
+				
+				System.out.println(adr);
+			}
+			
+			
+		}
+		
+		em.close();
+		
+	}
+	
+	
+}
+
+
+
+
+eager and lazy loading:-
+----------------------------
+
+--by default ORM s/w (Hibernate) perform lazy loading while fetching the objs, when we fetch the parent obj(first level obj),then only the first level obj related data will be loaded into the memory,but the 2nd level  obj related data will be loaded at time of calling the 2nd level object related methods.
+
+
+ex:-
+
+Demo1.java:-
+--------------
+
+
+public class Demo {
+	
+	public static void main(String[] args) {
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		
+ 		Employee emp= em.find(Employee.class, 10);
+ 		
+ 		em.close();  // even though before closing the EM obj we got the Employee obj
+		//here only Employee related obj will be loaded ,address obj data will be not be loaded
+			//so while fetching the address related data we will get an exception
+		
+ 		System.out.println(emp.getEid());
+ 		System.out.println(emp.getEname());
+ 		System.out.println(emp.getSalary());
+ 		
+ 		System.out.println("All Address are:-");
+ 		
+ 		System.out.println("===========================");
+ 		Set<Address> addreses= emp.getAddresses();
+ 		
+ 		for(Address ad:addreses){
+ 			System.out.println("city :"+ad.getCity());
+ 			System.out.println("state :"+ad.getState());
+ 			System.out.println("Pincode :"+ad.getPincode());
+ 			
+ 			System.out.println("***************************");
+ 		}
+		
+		System.out.println("done...");
+	}
+
+}
+
+
+--to solve the above problem we need to use Eager loading:-
+
+ex:-
+
+Employee.java:-
+------------------
+
+@Entity
+public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int eid;
+	private String ename;
+	private int salary;
+	
+	@ElementCollection(fetch=FetchType.EAGER)
+	@Embedded
+	@JoinTable(name="empaddress",joinColumns=@JoinColumn(name="emp_id"))
+	private Set<Address> addresses=new HashSet<Address>();
+--
+--
+	
+}
+
+
+
+Association Mismatch:- table relationship problem:-
+=========================================
+
+
+--at the table level different types of tables will participate in different kind of relationships
+
+ex:-
+
+1.one to one (person ----- Driving licence) :- PK and FK(unique)
+
+2.one to many  (Dept ----Emp)  :- PK and FK (i.e PK of Dept will be inside the Emp as FK)
+
+3.many to many (student --- course) :- we need to take the help of 3rd table(linking table)
+
+
+
+---to access the meaningfull information from the multiple tables we need to establish the relationship.
+
+--these relationship enable us to navigate from one table record to another table records.
+
+--to navigate from one table to another table,our tables must be in a relationship.
+
+
+
+--when tables in the relationship then the Entity classes which represents the tables should also be in the relationships accordingly. so that objs of these classes should also be in a relationship .
+
+-- so we can navigate from one obj details to another obj details.
+
+
+--JPA supports the relationship bt the Entity classes not only with the cardinality but also with the 
+direction
+
+--uni-directional and bi-directional is the another classification of relationship.
+
+---in uni-direc, we can define child Entity obj inside the parent Entity , or parent Entity reff inside the 
+child Entity , but both are not possible.
+
+--with this relation, we can access the child class obj from parent obj or parent class obj from the 
+child class obj, both not possible at a time.
+
+--in bi-directional :- we define child Entity obj inside the parent Entity and parent Entity obj inside the 
+child Entity,(navigation is possible from the either one of the any obj)
+
+so JPA supports 4 types of relationships:-
+
+
+1.one to one
+2.one to many
+3.many to one
+4.many to many (it is by defualt bi-directional only)
+
+
+
+
+
+One-to-Many unidirectional:- (from Dept to Emp)
+-----------------------------------
+
+one Dept can have multiple Emp , 
+
+step 1:- here we need to develop child Entity class first as individual.(Employee Entity)
+
+step 2:- develop a parent Entity class with its own properties and declare one extra Collection type of Child 
+Entity class property (either List of child entity class or Set of child entity class).
+
+and apply @OneToMany annotation to this property ex:-
+
+
+	@OneToMany
+	private List<Employee> emps=new ArrayList<Employee>();
+
+
+Employee.java:-
+-------------------
+
+
+	@Entity
+	public class Employee {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int empId;
+	private String name;
+	private int salary;
+	
+	--
+	--
+	}
+
+Department.java:-
+-----------------------
+
+
+	@Entity
+	public class Department {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int deptId;
+	private String dname;
+	private String location;
+	
+	//it is the extra property to maintain OTM relationship
+	@OneToMany
+	private List<Employee> emps=new ArrayList<Employee>();
+	--
+	--
+	}
+
+Demo.java:-
+---------------
+
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+	ome
+		
+		
+	Employee emp1=new Employee();
+	emp1.setName("ram");
+	emp1.setSalary(8500);
+	
+	Employee emp2=new Employee();
+	emp2.setName("ramesh");
+	emp2.setSalary(7500);
+	
+	Department dept=new Department();
+	
+	dept.setDname("HR");
+	dept.setLocation("Kolkata");
+
+	//associating both employee with a  dept obj	
+	dept.getEmps().add(emp1);
+	dept.getEmps().add(emp2);
+	
+	
+	
+	em.getTransaction().begin();
+	
+	em.persist(emp1);
+	em.persist(emp2);
+	em.persist(dept);
+	
+	em.getTransaction().commit();
+	
+	em.close();
+	
+	System.out.println("done...");
+	
+	}
+}
+
+--with the above application, here for both the Entity classes 2 seperate tables will be created independently(they does not have info about each other.) , in addition to that one seperate linking table will be created which contains the PK of both the tables.
+
+this seperate table name and its column names are:-
+
+
+department_employee  :- table name
+	department_deptid  :- it reffers deptid of department table 
+	emps_empid;  :- it will reffers empid of employee table
+
+
+--in the above application we have saved first, all the child entity obj then we saved the parent entity obj.
+
+--but if we want that once we persist the parent obj, automatically all the child object also should be persisted, then we need to use cascading option:-
+
+ex:-
+
+
+	@OneToMany(cascade= CascadeType.ALL)
+	private List<Employee> emps=new ArrayList<Employee>();
+
+
+--we can change the 3rd generated table name as well as their column names also :-
+
+ex:-
+
+
+
+	@OneToMany(cascade= CascadeType.ALL)
+@JoinTable(name="dept_emp",joinColumns=@JoinColumn(name="did"),inverseJoinColumns=@JoinColumn(name="eid"))
+	private List<Employee> emps=new ArrayList<Employee>();
+	
+here the 3rd table name will become :- dept_emp;
+
+and both column names will be :-
+
+did(which reffers the PK of department table) and eid(which reffers PK of employee table)
+
+
+Note: - Department Entity class will take the help of this 3rd table to navigate the details of Employee Entity
+
+
+ex:- adding another employee in the exsisting department-
+-----------------------------------------------------------------
+
+Demo.java:-
+--------------
+
+
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+	EntityManager em=EMUtil.provideEntityManager();
+		
+	
+	Employee emp=new Employee();
+	emp.setName("Amit");
+	emp.setSalary(6500);
+	
+	Department dept= em.find(Department.class, 1);
+	
+	List<Employee> emps= dept.getEmps();
+	
+	em.getTransaction().begin();
+	
+	emps.add(emp);
+	
+	em.getTransaction().commit();
+	
+	
+	System.out.println("done...");
+	
+	}
+}
+
+
+getting all the Employees from the Department "HR";
+==========================================
+
+package com.masai.model;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import com.masai.utility.EMUtil;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		
+		EntityManager em= EMUtil.provideEntityManager();
+		
+		
+		String jpql= "select emps from Department where dname='HR'";
+		
+		Query q= em.createQuery(jpql);
+		
+		List<Employee> allemps= q.getResultList();
+		
+			
+		System.out.println(allemps);
+		
+		
+		System.out.println("done...");
+		
+		
+				
+	}
+	
+	
+}
+
+
+Note: in a single list we get all the Employee list.
+
+
+
+
+
+
+
+
+

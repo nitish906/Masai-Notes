@@ -1,0 +1,221 @@
+
+IDE (IntelliJ, Eclipse, STS, VScode, NetBean, RAD, )
+
+notepad + command prompt.
+
+STS = eclipse + some extra plugins 
+
+
+A a1= ?
+
+--to a normal class variable only 3 possible values are allowed.
+
+1. Same class object
+
+A a1 = new A();
+
+2.its child class object
+
+A a1 = new AChild();
+
+
+3.default value of any ref variable
+
+A a1 = null;
+
+ex:
+
+
+A a1= new A();
+//here with the help of a1 we can call all the methods of A class and all the 
+//methods of its parent class. except private method of parent class.
+
+
+A a1= null;
+//all the static methods we can call from a1.
+
+Inheritance: with the Inheritance we acheive IS-A relationship among two objects.
+---------------
+
+LgOldTv.java:
+-----------------
+
+package com.masai;
+
+public class LgOldTv {
+	
+	public void start() {
+		System.out.println("Tv Starting");
+	}
+	
+	public void increaseVolume() {
+		System.out.println("volume incresed");
+	}
+
+	public void changeChannel() {
+		System.out.println("channel changed in OLD way");
+	}
+	
+	
+}
+
+
+
+LgSmartTv.java:
+----------------------
+
+package com.masai;
+
+public class LgSmartTv extends LgOldTv{
+	
+	
+	@Override
+	public void changeChannel() {
+		
+		System.out.println("Channel Changed in smart way");
+	}
+	
+	public void playGame() {
+		System.out.println("Game Starts");
+	}
+	
+	
+
+}
+
+
+
+Demo.java:
+----------------
+
+package com.masai;
+
+public class Demo {
+	
+	public static void main(String[] args) {
+		
+	
+//		LgOldTv remote = new LgOldTv();
+//		remote.start();
+//		remote.increaseVolume();
+//		remote.changeChannel(); // old way
+		
+		
+//		LgSmartTv remote = new LgSmartTv();
+//		remote.start();
+//		remote.increaseVolume();
+//		remote.changeChannel(); //smart way
+//		remote.playGame();
+		
+		
+		LgOldTv remote = new LgSmartTv();
+		
+		remote.start();
+		remote.increaseVolume();
+		remote.changeChannel(); //smart way
+		//remote.playGame();
+		
+		//Object downcasting	
+		 LgSmartTv sremote= (LgSmartTv)remote;
+		
+		 sremote.playGame();
+		
+	}
+}
+
+Object downcasting and instanceof operator:
+-------------------------------------------------------
+
+package com.masai;
+
+public class Demo {
+	
+	
+	public Object fun1(int x) {
+		System.out.println("inside fun1 of Demo");
+	
+		if(x > 10)
+			return new A();
+		else
+			return new B();
+		
+	
+	}
+	
+	
+	public static void main(String[] args) {
+	
+		
+		
+		Demo d1 = new Demo();
+		Object obj= d1.fun1(12);
+		
+		
+		if(obj instanceof A) {
+			
+			A a1= (A)obj;
+			a1.funA();
+		}
+		
+		
+		
+		System.out.println("end of main...");
+	}
+
+}
+
+
+
+Abstract class
+Abastract method
+
+abstract method:
+----------------------
+
+--abstract method is also called as unimplemented method.
+--normal method is also called as implemented method or concrete method.
+
+public void funA() // method signature
+{ //method body
+
+this body can contains zero or many statements
+
+}
+
+
+--the method which is having a method body is known as implemented or concrete method.(at least zero body)
+
+--the method without body (only singnature) is called as unimplemened  method or abstract method.
+--abstract keyword must be there in that method signature.
+
+
+public abstract void funA();
+
+****Note: inside a normal class (in concreate class) we can not have any abstract methods.
+
+Abstract class:
+===========
+Encapsulation
+Polymorphism
+Inheritance
+Abstraction :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				

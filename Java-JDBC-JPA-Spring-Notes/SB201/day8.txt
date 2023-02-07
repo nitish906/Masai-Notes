@@ -1,0 +1,292 @@
+DAL : JDBC -- ORM (JPA with Hibernate)
+
+Business Logic Layer/ Service layer 
+
+Presentation Layer/ UI layer
+
+
+Designing Business Logic layer using Spring:
+===================================
+
+
+J2SE  : it is a specification from Oracle, implmentation of this specification is JDK s/w 
+J2EE : It is also a specification, implementation of this specification is ApplicationServer s/w
+
+
+JDBC : it is a specification, the implementation of this is JDBC driver s/w.
+
+JPA : it is a specification, the implementation is ORM s/w : hibernate 
+
+
+
+Business application :
+
+Business organization : 2 types
+
+1.small scale 
+
+2.large scale (Enterprise)
+
+
+Enterprise: large scale business organization, which provides/run their services on a large scale area/ entire world.
+
+ex: -- ICICI bank, Indian Railway, LIC, insurance comp, travel company. online shopping, 
+
+--Enterprise also required computer application to computerize their services.
+
+--the application we develop to computerize the services of an Enterprise is called as EA.
+
+
+--Persistence logic, Business logic and presentation logic is common for the Enterprise level computer application also.
+
+
+challanges to develop Enterprise application:
+==================================
+
+--An Enterprise application is bydefault a Distributed application,becoz Enterprise application is divided into seperate modules, and each module can be a independent application, here each module will colaborate each other and provide services as a whole.
+
+1. data security : the data exchange should be encrypted and decrepted. authentication and authorization.
+
+2. client can access the application in plaform and language independent form, i.e presentation logic should be web-enabled. so client can access the application through browser.
+
+presentation could be GUI : that can be access by the browser (webapplication), they are not reusable
+or 
+could be raw data  (JSON or xml format)  (webservices) generating the api , they are reusable
+
+
+GoAir: -------> webapplication ---------------> GUI ----> book the ticket (it is used by the end-user )
+   |
+   --------------> it is having a webservices which generates a REST api and raw data (in json or xml format) (it is used by other application)
+
+
+Yarta: webapplication------------->GUI ----->book the ticket 
+
+
+3. transaction management: (either everything or nothing should happen )
+
+4. logging 
+
+5.messaging 
+
+6.mailing 
+
+etc..
+
+
+--to overcome these challanges 2 company comes with f/w software:
+
+1.microsoft : .net f/w 
+
+2. sun-microsystem : J2EE f/w
+
+--the above f/w comes in the form of specification
+
+.net f/w : it is proprietary specification
+
+J2EE f/w : it is a open specification
+
+
+--the implementation of .net specification is "IIS server s/w".
+
+--the implementation of J2EE specificaiton is "ApplicationServer s/w"
+
+Some of the application server are:
+
+Websphere server : from IBM
+
+Weblogic server : from Oracle 
+
+Glassfish server : from Oracle 
+
+JBOSS server / wildfly : RedHat
+
+etc.
+
+
+Android : open specificaiton : ---- Android OS (LG,XIOMI,OPPO, SAMSUNG)
+
+IOS : proprietary specification : -- IOS os (Apple )
+
+--these servers runs all those challenges to develop an EA in the background so that we can focus on the main business logic, that's why we call them as a f/w software.
+
+--J2EE specification provides lots of api (classes and interfaces ) to draw or use those services so that we just need to focus on main business logic.
+
+
+JAAS api (Java authentication and authorization)/ Spring security
+Servlet/JSP api ----> web enabled
+JTA api (Java transaction api)
+REST api 
+JNDI api 
+etc.
+
+
+architecture of the Application server s/w :
+=================================
+
+
+Difference between AS and WebServer:
+===============================
+
+Java Based Web-server is a small part/ subset of Application server s/w.
+
+--ApplicationServer contains both EJB container and ServletContainer s/w
+where as WebServer contains only Servlet Container s/w.
+
+--AS can be communicated with any kind of protocol ex: http, ftp, smtp, etc
+whereas WS can be communicated only using Http protol.
+
+
+--mostly used java based Web server s/w is: Apache Tomcat server.
+
+
+--Container is a special type of s/w which provides runtime support (execution environment) to our components.
+
+
+
+****Note: After Spring, we don't need AS anymore, using a WebServer also we can develop an EA.
+
+
+Spring f/w:
+========
+
+
+--spring is a application f/w software to develop an EA.
+
+--s/w communities treat spring as a f/w of frameworks, becoz it gives the support of variaous other f/w also, like  hibernate, struts, JSF,etc.
+
+
+
+--spring is an open source,light weight application f/w that can be used in all the layers of java based Enterprise application developement.
+
+---with the spring f/w we can develop J2SE related or J2EE related application as well.
+
+--in early days of java based business application , programmer uses multiple java bean classes(normal java classes ) to build the business logic layer/ Service layer.
+
+--the Business logic layer only required the Enterprise capabilities like security, tx-management, logging, mailing ,etc, these Enterprise capabilities are also known as middlewere services to make our business logic perfect.
+
+
+--with the java bean classes, developers are only responsible to define and add these middlewere services to the main business logic , it  increased burden to the developers.
+
+
+//this method contains a business logic
+public void transferAmount(int srcAccno, int desAccno, int amount){
+
+//security logic 
+//logging logic
+//tx management
+//messaging
+//mailing
+//etc
+
+
+//check the accno from the DB
+//check the appropriate balance in srcAccount
+//deduct the amount from the source accoutnt
+//add the amount to the destination account
+
+
+
+}
+
+--to overcome the above burden to develop a business logic/ service layer logic, 
+sun-microsystem has released EJB technology as a part of J2EE sepecification in 1998.
+
+
+--In EJB technology, programmer develop the main business logic , and EJB container
+provides these extra middleware services.
+
+
+--EJB reduced the middleware service development from the programmer, but it increased the complexities to access these middleware services, EJB component are heavy weight components( here our java class need to be devloped as a EJB component by implementing EJB technology related interfaces, need to override lots of unnessesary methods inside our class, need to register our class in varioaus xml files and deploy our EJB component inside the Application Server s/w)
+
+--EJB has been very powerfull but very complex to build the Business logic layer.
+
+--to build the business logic layer , simplicity of java bean classes + power of EJB - complexities of EJB 
+was realized in the industry.
+
+--Rod Jonshon. developed a f/w "Interface 21" to address the above need and rename it to spring and released Spring 1.0 in mid of 2004.
+
+--Spring f/w allows to write the business logic in a POJO classes, and 
+Spring Container provides the middleware services with less process overhead .
+
+--so our business logic related classes need not implement or extends any other classes or interfaces or verride any unnessacary methods . no need to install application server also.
+
+--unlike EJB container, Spring Container is a ligtweight container, can be activated in any type of java application (need not install AS.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

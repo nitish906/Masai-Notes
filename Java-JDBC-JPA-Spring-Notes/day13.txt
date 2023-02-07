@@ -1,0 +1,175 @@
+interface StudentService{
+
+registerStudent()
+getStudentByRoll()
+getAllStudent()
+
+}
+
+interface is a blueprint of a  class is blueprint of an object
+
+
+static polymorphism:
+--------------------------
+
+method overloading: which method will be called decided at compile time.
+
+dynamic polymorphism:
+--------------------------------
+method overriding: which method will be called decided at runtime
+
+A  a1 = new B();
+a1.funA();
+
+
+early binding/static binding: type of the object and method body to the method call determined at compile time.
+
+
+late binding/dynamic binding: type of object and method body to the method call determined at runtime.
+
+
+--if the method body is binded with the method call at runtime then it is called late binding.
+
+
+interface X{
+void funX();
+void funY();
+}
+
+
+class Demo{
+
+public static void show(X x1){
+
+sop(x1.getClass().getName());
+x1.funX();
+x1.funY();
+
+}
+
+
+
+
+main(){
+
+show(new XImpl());
+show(new XImpl2());
+
+}
+
+
+}
+
+
+
+
+
+class A{
+funA(){
+---
+}
+
+}
+
+class B extends A{
+@Override
+funA(){
+---
+}
+
+}
+
+
+class Demo{
+
+public static void show(A a1){
+funA();
+}
+
+}
+
+main(){
+
+show(new B());
+
+}
+
+
+
+packages in java:
+=============
+
+--to bind the related concept logically.
+
+java.io package: contains all the classes and interfaces which are used to 
+perform io operations
+
+java.util package: it contains all the utiltiy related classes.
+
+java.sql package: 
+
+java.lang package: all the common classes
+
+there are 3 uses of packages in java:
+
+1.we can bind the related concept logically
+com.masai.dao;
+com.masai.service;
+com.masai.ui;
+
+2.avoid the naming conflict.
+
+3. to provide some level of security (with respect to access modifiers)
+
+
+
+package naming convenstion is : reverse domain name.
+
+full Qualified class name:
+
+String 
+java.lang.String
+
+
+--in java every package is a folder the reverse is not true.
+
+
+
+Access modifiers:
+==============
+
+public : accesibilty is global (we can access in any classes or any packages)
+default : it is similar to public as long as inside the same package, but in other package it work as private 
+protected : it is similar to default, but outside the package we can access by using inheritance.
+private : accessibilty restricted to that class only.
+
+
+--access modifiers are applicable to the class, methods, variables, contructors 
+
+--it represents the accessibitly out the class or outside the package
+
+Note: a normal class(outer class) can only be public or default, whereas an inner 
+classes can be public private protected or default also.
+
+
+p1 
+A  (protected int x=10)
+B   (A a1 = new A();   a1.x;) //OK
+C
+
+
+p2 import p1.A
+Y  extends A (A a1 = new A();   a1.x;)
+
+
+-- if we want to restrict the user to create object of any class:
+mark that class as abstract class.
+
+-- if we want to restrict the user to create object of any class outside of that class :
+mark the constructor as private.
+
+
+
+
+
+

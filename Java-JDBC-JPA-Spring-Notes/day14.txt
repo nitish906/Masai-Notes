@@ -1,0 +1,382 @@
+--if a constructor of a class is private :
+
+1.then we can not create its object outside that class.
+
+2.even we can not extends this class into another class.
+
+static factory method : it is basically used to hide the object creation process from the user.
+
+
+
+var-args:
+=======
+
+--variable number of arguments.
+
+--introduced in java 1.5 v
+
+--this concept is developed based on array concept only.
+
+ex:
+
+Demo.java:
+--------------
+
+package com.masai;
+
+public  class Demo {
+
+	public static int add(int... nums) {
+	//this method we can call by supplying any number of int argument inclucing zero argument also.
+		
+		int result = 0;
+		
+		
+		for(int num:nums) {
+			
+			result+=num;
+		}
+		
+		
+		return result;
+	}
+	
+	
+	
+	public static void main(String[] args) {
+	
+		
+	 int result= add();	
+		
+	 System.out.println("The Result is :"+result);
+	}
+}
+
+
+Note: we can access var-args elements using zero based index just like array
+
+rules of using var-args:
+-----------------------------
+
+1.--if we want to declare any other parmerter along with var-args then in this case var-args should be at last.
+
+ex:
+
+
+	public static int add(String name,int... nums) {
+		
+	}	
+
+	now we can call it as following ways:
+
+	  add("ratan");
+	  add("ratan",10);
+	  add("ratan",10,20);
+	  
+2. two var-args in a single method parameter is not possible.
+
+3.if multiple overloaded methods are there then var-args gets the least priority.
+
+4.along with var-args we can not define another method which takes array of same type as parameter.
+it will become duplicate method defination.
+
+
+
+Enum:
+======
+
+--with the help of enum we can create our own datatype (enumerated data type)
+
+ex: 
+
+enum of Month:
+
+JAN,FEB,MAR,APR
+
+enum can be created in 2 ways :
+
+1. as a seperate .java file (we can compile this enum and can generate a .class file also)
+
+2. as a inner enum inside a class.
+
+
+ex:
+
+Month.java:
+---------------
+
+package com.masai;
+
+ public enum Month {
+
+	 JAN,FEB,MAR,APR;
+	
+}
+
+
+
+Demo.java:
+---------------
+
+package com.masai;
+
+public  class Demo {
+
+	
+	public static void main(String[] args) {
+	
+		Month m = Month.JAN;
+		
+	System.out.println(m);			
+	}
+}
+
+
+--enum is introduced in java 1.5 v 
+
+--every enum constant is implemented by using class concept.
+
+--every enum constant is always public static final.
+
+--every enum constant represents an object of the type enum.
+
+ex:
+
+ public enum Month {
+
+	 JAN,FEB,MAR,APR;
+	
+}
+
+--the above enum will be converted internally as follows:
+
+final class Month extends Enum{
+
+public static final  Month JAN = new Month();
+public static final  Month FEB = new Month();
+public static final  Month MAR = new Month();
+public static final  Month APR = new Month();
+}
+
+
+java.lang.Enum class is an abstract class.
+
+Note: inheritance concept is not applicable with enum.
+but an enum can implements any number interfaces.
+
+--unlike other languages enum in java is more powefull because we can have variables, methods, constrcutors also inside an enum.
+
+
+values() method : this method will return all the values in the from of an array , it is an static method which we can call on any enum.
+
+ordinal() method: it is a n0n static method. by using this we can get the index of a value.(zero based index)
+
+
+Demo.java:
+--------------
+
+package com.masai;
+
+public  class Demo {
+
+	
+	public static void main(String[] args) {
+	
+		Month[] mr= Month.values();
+		
+		for(Month m:mr) {
+			
+			System.out.println(m+"============"+m.ordinal());
+		}		
+	}
+}
+
+
+constructor in enum:
+-------------------------
+
+--we can place a constrcutor inside an enum, that constrcutor can only be 
+private. (bydaefault compile will make it private)
+
+--a constrcutor of an enum will be executed seperetly for every enum constant
+ at the time of enum class loading into the memory.
+
+ex:
+
+package com.masai;
+
+ public enum Month {
+
+	 JAN,FEB,MAR,APR,MAY,JUN;
+	 
+	 private Month() {
+		System.out.println("inside constructor of Month");
+	}
+	
+}
+
+
+example 2:
+
+Month.java:
+---------------
+
+package com.masai;
+
+ public enum Month {
+
+	 JAN,FEB,MAR,APR,MAY(25),JUN(30);
+	 
+	 private Month() {
+		System.out.println("inside constructor of Month");
+	}
+	 
+	 
+	 private Month(int num) {
+			System.out.println("inside constructor(int num) of Month");
+	}
+
+
+
+
+Item.java:
+------------
+
+package com.masai;
+
+public enum Item {
+	
+	SUGER, SALT, PENCIL(5),PEN(10);
+	
+	int price;
+	
+	private Item() {
+		this.price=20;
+	}
+	
+	
+	private Item(int price) {
+		this.price=price;
+	}
+	
+	public int getPrice() {
+		return this.price;
+		
+	}
+	
+}
+
+
+Demo.java:
+--------------
+
+package com.masai;
+
+public  class Demo {
+
+	
+	public static void main(String[] args) {
+	
+		Item[] itr= Item.values();
+		
+		
+		for(Item item: itr) {
+			
+			System.out.println(item+" price is :"+item.getPrice());
+		}
+		
+		
+	}
+}
+
+
+	
+}
+
+
+
+example 3: 
+
+City.java:
+------------
+
+package com.masai;
+
+public enum City {
+
+	DELHI{
+		
+		@Override
+		public void message() {
+			System.out.println("Welcome user you are in Capital..");
+			System.out.println("Tower in your area is :"+numberOfTowers);
+			
+		}
+		
+		
+	},MUMBAI,CHENNAI("50 towers"),KOLKATA;
+	
+	String numberOfTowers;
+	
+	private City() {
+		this.numberOfTowers="100 towers";
+	}
+	
+	private City(String numberOfTowers) {
+		this.numberOfTowers=numberOfTowers;
+	}
+	
+	public void message() {
+		
+		System.out.println("Welcome user..");
+		System.out.println("Tower in your area is :"+numberOfTowers);
+	}
+	
+	
+}
+
+
+
+Demo.java:
+--------------
+
+package com.masai;
+
+import java.util.Scanner;
+
+public  class Demo {
+
+	
+	
+	
+	public void printCity(City city) {
+		
+		if(city != null) {
+		
+			city.message();
+		
+		}
+		else
+			System.out.println("invalid city");
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+	
+	Demo d1 = new Demo();
+	
+		Scanner sc=new Scanner(System.in);
+		
+		System.out.println("Enter the City");
+		String cityName= sc.next();
+	
+		//String to enum conversion
+		City city= City.valueOf(cityName.toUpperCase());
+	
+		d1.printCity(city);
+		
+		
+	}
+}

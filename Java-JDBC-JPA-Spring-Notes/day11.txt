@@ -1,0 +1,285 @@
+Abstract class:
+===========
+
+--with the help of Abstract class we achieve partial abstraction.
+
+Abstract class 
+abstract method. 
+
+--Abstract class mean to be extended.
+
+--Abstract class existance depend upon its child class.
+
+
+Abs a1 = ?
+
+a1 = null;
+a1 = AbsChild();
+
+
+1.full implemented Structure (concrete class)
+2.partial implemented structure (AC)
+3.full unimplemented structure (interface)
+
+
+Interface :
+========
+
+--it is full unimplemented structure in java.
+
+--till jdk 1.7 interfaces use to contains only abstract methods and final variables.
+
+--from jdk 1.8 we can place method with body also inside an interface.
+
+
+X.java:
+--------
+
+package com.masai;
+
+public interface X {
+
+	public abstract void fun1();
+	
+	
+}
+
+
+class A{
+
+}
+
+A.java
+			          default constructor
+>javac A.java-----------compiler------------A.class
+
+>javac X.java -----java compiler----------> X.class
+
+--.class file will be genereted for an interface also.
+--constructor concept is not applicable with interface.
+
+Note: inside an interface if we define any unimplemented method, that method is bydefault "public and abstract " whether we mention it or not.
+
+
+--with the help of an interface we achive full abstraction.
+
+X.java:
+---------
+
+package com.masai;
+
+public interface X {
+
+	 void fun1();
+	 void fun2();
+		
+}
+
+
+--as we extends a class to another class, we can implement an interface inside a class.
+
+rule:--
+an interface can be implemented by any class, but if a class implements an interface, then that class must override all the abstract method of that interface otherwise we need make that implemented class as an abstract class.
+
+
+
+XImpl.java:
+--------------
+package com.masai;
+
+public class XImpl implements X {
+
+	@Override
+	public void fun1() {
+		
+		System.out.println("inside fun1 of XImpl");
+	}
+
+	@Override
+	public void fun2() {
+		System.out.println("inside fun2 of XImpl");
+	}
+	
+	//specific method 
+	public void fun3() {
+		System.out.println("inside fun3 of XImpl");
+	}
+
+}
+
+
+
+Note: we can define reference variable of an interface also.
+
+
+X x1= ?
+
+X x1= new X(); //CE
+
+X x1= new XImpl(); //OK  any implementation class obj.
+
+X x1= null;
+
+
+**Note: we can define variable of any 3 valid structure like (concret class, abstract class, interface) , but the object should be created only for the concrete class.
+
+
+---using implements keyword we also achieve IS-A relationship.
+
+X x1 =new XImpl();
+
+--all the rules of super class reff and child class obj is applicable here.
+
+
+
+XImpl.java:
+--------------
+
+package com.masai;
+
+public class Demo {
+	
+	
+	
+	public static void main(String[] args) {
+		
+	
+		X x1 =new XImpl();
+		
+		
+		x1.fun1();
+		x1.fun2();
+		
+		XImpl xx= (XImpl)x1; //downcasting interface variable into its implemented class object
+		
+		xx.fun3();
+		
+	}
+
+}
+
+
+--inside an interface, in addition to an abstract method we can also have variables
+
+--if we define any variable inside an interface, it will be by default "public static final" wheter we mention it or not.
+
+--that variable must be initialized at time of declaration.
+
+--variable defined inside an interface can be accessed by the implementation class object also.
+
+
+
+ex:-
+
+X.java:
+---------
+
+package com.masai;
+
+public interface X {
+
+	 int i=10;
+	
+	
+	
+	 void fun1();
+	 void fun2();
+	
+	
+}
+
+
+XImpl.java:
+--------------
+
+previous example
+
+
+Demo.java:
+---------------
+
+package com.masai;
+
+public class Demo {
+	
+	
+	
+	public static void main(String[] args) {
+		
+	
+		X x1 =new XImpl();
+		
+		
+		x1.fun1();
+		x1.fun2();
+		
+		XImpl xx= (XImpl)x1; //downcasting interface variable into its implemented class object
+		
+		xx.fun3();
+		
+		System.out.println(x1.i);
+		
+		
+		XImpl x2 = new XImpl();
+		x2.fun1();
+		x2.fun2();
+		x2.fun3();
+		System.out.println(x2.i);		
+	}
+}
+
+
+*************************************
+static concept with inheritance and override:
+-------------------------------------------------------
+
+***Note:--static variables we can access using object also, but static members of a class does not belongs to object. they are called as class members.
+
+***static members are sharable across all the objects of a perticular class. whereas non-static members are specific to thier own object.
+
+static member of a class we can access using 3 ways:
+
+1. inside the same class we can access directly.
+
+2. using object of that its class
+
+**3. using className
+
+
+Note: static method does not participate in method overriding(in fact it does not 
+participate in inheritance).
+
+but if we define same static method inside the child class, it is known as method
+hinding, and this method is purly belongs to child class only.
+
+
+
+
+
+
+
+****************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
